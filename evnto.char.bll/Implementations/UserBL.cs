@@ -125,5 +125,11 @@ namespace evnto.chat.bll.Implementations
             using (EvntoChatDBContext context = CreateDbContext())
                 context.ExecSessionApiKeyUpdateSP(token, Configuration.ApiKey);
         }
+
+        public void SignOut(int userId)
+        {
+            using (EvntoChatDBContext context = CreateDbContext())
+                context.ExecSignOutSP(userId);
+        }
     }
 }

@@ -15,5 +15,7 @@ namespace evnto.chat.bll.Interfaces
         UserSession GetSessionByUser(int userId);
 
         void UpdateSessionApiKey(string token);
+
+        void SignOut(int userId);
     }
 }

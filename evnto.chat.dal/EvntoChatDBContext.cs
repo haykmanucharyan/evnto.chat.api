@@ -64,6 +64,12 @@ namespace evnto.chat.dal
                 new SqlParameter { ParameterName = "@ApiKey", Value = apiKey });
         }
 
+        public void ExecSignOutSP(int userId)
+        {
+            Database.ExecuteSqlRaw("EXEC dbo.SPSignOut @UserId",
+                new SqlParameter { ParameterName = "@UserId", Value = userId });
+        }
+
         #endregion
     }
 }

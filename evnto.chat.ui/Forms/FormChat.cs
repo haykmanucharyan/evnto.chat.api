@@ -71,6 +71,7 @@ namespace evnto.chat.ui.Forms
 
         private async void FormChat_FormClosed(object sender, FormClosedEventArgs e)
         {
+            await _httpClient.SignOutAsync();
             await _wSClient.DisconnectAsync();
             Application.Exit();
         }

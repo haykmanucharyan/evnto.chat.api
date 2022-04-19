@@ -99,12 +99,20 @@ namespace evnto.chat.ui
 
         public async Task<bool> SignInAsync(string userName, string password)
         {
-            SignInModel sm = new SignInModel();
+            SignModel sm = new SignModel();
             sm.UserName = userName;
             sm.Password = password;
 
-            Session = await PostAsync<SignInModel, UserSessionModel>("user", sm);
+            Session = await PostAsync<SignModel, UserSessionModel>("user", sm);
             return true;
+        }
+
+        public async Task SignOutAsync()
+        {
+            SignModel sm = new SignModel();
+            sm.Userid = Session.UserId;
+
+            await PostAsync<SignModel, UserSessionModel>("user", sm);
         }
 
         public async Task SignUpAsync(string userNmae, string fullName, string password)
