@@ -60,4 +60,11 @@ app.UseAuthorization();
 // exception handling
 app.UseMiddleware<EvntoExceptionMiddleware>();
 
+// web sockets
+WebSocketOptions wsOptions = new WebSocketOptions()
+{
+    KeepAliveInterval = TimeSpan.FromSeconds(30)
+};
+app.UseWebSockets(wsOptions);
+
 app.Run();

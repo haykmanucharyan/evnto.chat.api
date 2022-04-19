@@ -32,7 +32,11 @@ namespace evnto.chat.ui.Forms
             EvntoHttpClient httpClient = new EvntoHttpClient(textBoxUrl.Text);
             if (await httpClient.SignInAsync(textBoxUserName.Text, textBoxPassword.Text))
             {
-                FormChat frm = new FormChat(httpClient);
+                Uri uri = new Uri(textBoxUrl.Text);
+                string wsUrl = $"ws://{uri.Host}:{uri.Port}/ws";
+                EvntoWSClient wsClient = new EvntoWSClient(wsUrl, httpClient.Session);
+                
+                FormChat frm = new FormChat(httpClient, wsClient);
                 frm.Show();
                 textBoxUserName.Clear();
                 textBoxPassword.Clear();

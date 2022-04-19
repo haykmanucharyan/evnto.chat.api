@@ -8,6 +8,7 @@ namespace evnto.chat.ui.Forms
         #region Fields
 
         EvntoHttpClient _httpClient;
+        EvntoWSClient _wSClient;
 
         #endregion
 
@@ -23,9 +24,10 @@ namespace evnto.chat.ui.Forms
 
         #region Ctor
 
-        public FormChat(EvntoHttpClient httpClient)
+        public FormChat(EvntoHttpClient httpClient, EvntoWSClient wSClient)
         {
             _httpClient = httpClient;
+            _wSClient = wSClient;
             this.FormClosed += FormChat_FormClosed;
             InitializeComponent();
             dataGridViewMessages.AutoGenerateColumns = false;
@@ -67,15 +69,18 @@ namespace evnto.chat.ui.Forms
 
         #region Form events
 
-        private void FormChat_FormClosed(object sender, FormClosedEventArgs e)
+        private async void FormChat_FormClosed(object sender, FormClosedEventArgs e)
         {
+            await _wSClient.DisconnectAsync();
             Application.Exit();
         }
 
         private async void FormChat_Load(object sender, EventArgs e)
         {
+            await _wSClient.ConnectAsync();
+
             await LoadUsers();
-            await LoadChats();
+            await LoadChats();            
         }
 
         #endregion

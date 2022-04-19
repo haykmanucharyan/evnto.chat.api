@@ -37,19 +37,19 @@
             this.textBoxUserName = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBoxUrl = new System.Windows.Forms.TextBox();
+            this.textBoxRepeatPassword = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textBoxFullName = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.buttonSigUp = new System.Windows.Forms.Button();
             this.textBoxSignupPassword = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.textBoxSignupUsername = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBoxFullName = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.textBoxRepeatPassword = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
+            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textBoxUrl = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -148,36 +148,40 @@
             this.tabPage2.Text = "Sign Up";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // errorProvider1
+            // textBoxRepeatPassword
             // 
-            this.errorProvider1.ContainerControl = this;
+            this.textBoxRepeatPassword.Location = new System.Drawing.Point(119, 103);
+            this.textBoxRepeatPassword.Name = "textBoxRepeatPassword";
+            this.textBoxRepeatPassword.PasswordChar = '*';
+            this.textBoxRepeatPassword.Size = new System.Drawing.Size(281, 23);
+            this.textBoxRepeatPassword.TabIndex = 15;
             // 
-            // panel1
+            // label7
             // 
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.textBoxUrl);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(423, 32);
-            this.panel1.TabIndex = 1;
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label7.Location = new System.Drawing.Point(17, 106);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(96, 15);
+            this.label7.TabIndex = 14;
+            this.label7.Text = "Repeat password";
             // 
-            // label1
+            // textBoxFullName
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(76, 15);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "API base URL";
+            this.textBoxFullName.Location = new System.Drawing.Point(86, 16);
+            this.textBoxFullName.Name = "textBoxFullName";
+            this.textBoxFullName.Size = new System.Drawing.Size(314, 23);
+            this.textBoxFullName.TabIndex = 13;
             // 
-            // textBoxUrl
+            // label6
             // 
-            this.textBoxUrl.Location = new System.Drawing.Point(90, 4);
-            this.textBoxUrl.Name = "textBoxUrl";
-            this.textBoxUrl.Size = new System.Drawing.Size(297, 23);
-            this.textBoxUrl.TabIndex = 0;
-            this.textBoxUrl.Text = "http://localhost:5050/";
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label6.Location = new System.Drawing.Point(17, 19);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(59, 15);
+            this.label6.TabIndex = 12;
+            this.label6.Text = "Full name";
             // 
             // buttonSigUp
             // 
@@ -224,40 +228,36 @@
             this.label5.TabIndex = 7;
             this.label5.Text = "Username";
             // 
-            // textBoxFullName
+            // errorProvider1
             // 
-            this.textBoxFullName.Location = new System.Drawing.Point(86, 16);
-            this.textBoxFullName.Name = "textBoxFullName";
-            this.textBoxFullName.Size = new System.Drawing.Size(314, 23);
-            this.textBoxFullName.TabIndex = 13;
+            this.errorProvider1.ContainerControl = this;
             // 
-            // label6
+            // panel1
             // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label6.Location = new System.Drawing.Point(17, 19);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(59, 15);
-            this.label6.TabIndex = 12;
-            this.label6.Text = "Full name";
+            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.textBoxUrl);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(423, 32);
+            this.panel1.TabIndex = 1;
             // 
-            // textBoxRepeatPassword
+            // label1
             // 
-            this.textBoxRepeatPassword.Location = new System.Drawing.Point(119, 103);
-            this.textBoxRepeatPassword.Name = "textBoxRepeatPassword";
-            this.textBoxRepeatPassword.PasswordChar = '*';
-            this.textBoxRepeatPassword.Size = new System.Drawing.Size(281, 23);
-            this.textBoxRepeatPassword.TabIndex = 15;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(9, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(76, 15);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "API base URL";
             // 
-            // label7
+            // textBoxUrl
             // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label7.Location = new System.Drawing.Point(17, 106);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(96, 15);
-            this.label7.TabIndex = 14;
-            this.label7.Text = "Repeat password";
+            this.textBoxUrl.Location = new System.Drawing.Point(90, 4);
+            this.textBoxUrl.Name = "textBoxUrl";
+            this.textBoxUrl.Size = new System.Drawing.Size(297, 23);
+            this.textBoxUrl.TabIndex = 0;
+            this.textBoxUrl.Text = "http://localhost:5050/";
             // 
             // FormSignIn
             // 
@@ -270,6 +270,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormSignIn";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Evnto Chat";
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);

@@ -44,13 +44,13 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.listBoxChats = new System.Windows.Forms.ListBox();
             this.dataGridViewMessages = new System.Windows.Forms.DataGridView();
+            this.ColumnCreated = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnFrom = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1 = new System.Windows.Forms.Panel();
             this.textBoxMessage = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.buttonSend = new System.Windows.Forms.Button();
-            this.ColumnCreated = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnFrom = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.toolStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -232,6 +232,27 @@
             this.dataGridViewMessages.Size = new System.Drawing.Size(317, 287);
             this.dataGridViewMessages.TabIndex = 1;
             // 
+            // ColumnCreated
+            // 
+            this.ColumnCreated.DataPropertyName = "Created";
+            this.ColumnCreated.HeaderText = "Timestamp";
+            this.ColumnCreated.Name = "ColumnCreated";
+            this.ColumnCreated.ReadOnly = true;
+            // 
+            // ColumnFrom
+            // 
+            this.ColumnFrom.DataPropertyName = "AuthorUserInfo";
+            this.ColumnFrom.HeaderText = "From";
+            this.ColumnFrom.Name = "ColumnFrom";
+            this.ColumnFrom.ReadOnly = true;
+            // 
+            // ColumnText
+            // 
+            this.ColumnText.DataPropertyName = "Text";
+            this.ColumnText.HeaderText = "Message";
+            this.ColumnText.Name = "ColumnText";
+            this.ColumnText.ReadOnly = true;
+            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.textBoxMessage);
@@ -270,27 +291,6 @@
             this.buttonSend.UseVisualStyleBackColor = true;
             this.buttonSend.Click += new System.EventHandler(this.buttonSend_Click);
             // 
-            // ColumnCreated
-            // 
-            this.ColumnCreated.DataPropertyName = "Created";
-            this.ColumnCreated.HeaderText = "Timestamp";
-            this.ColumnCreated.Name = "ColumnCreated";
-            this.ColumnCreated.ReadOnly = true;
-            // 
-            // ColumnFrom
-            // 
-            this.ColumnFrom.DataPropertyName = "AuthorUserInfo";
-            this.ColumnFrom.HeaderText = "From";
-            this.ColumnFrom.Name = "ColumnFrom";
-            this.ColumnFrom.ReadOnly = true;
-            // 
-            // ColumnText
-            // 
-            this.ColumnText.DataPropertyName = "Text";
-            this.ColumnText.HeaderText = "Message";
-            this.ColumnText.Name = "ColumnText";
-            this.ColumnText.ReadOnly = true;
-            // 
             // FormChat
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -300,6 +300,7 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.toolStrip1);
             this.Name = "FormChat";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Evnto Chat";
             this.Load += new System.EventHandler(this.FormChat_Load);
             this.toolStrip1.ResumeLayout(false);
