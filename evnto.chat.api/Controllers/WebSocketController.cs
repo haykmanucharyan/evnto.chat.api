@@ -1,5 +1,4 @@
-﻿using evnto.chat.api.Models;
-using evnto.chat.bll.Interfaces;
+﻿using evnto.chat.bll.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Concurrent;

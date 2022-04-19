@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[SPCreateSession]
 	@Token CHAR(64),
-	@UserId INT
+	@UserId INT,
+	@ApiKey VARCHAR(256)
 WITH  
         NATIVE_COMPILATION,  
         SCHEMABINDING
@@ -14,7 +15,7 @@ BEGIN ATOMIC
 	WHERE UserId = @UserId;
 
 	-- create new session
-	INSERT INTO dbo.UserSession (Token, UserId)
-					VALUES (@Token, @UserId);
+	INSERT INTO dbo.UserSession (Token, UserId, ApiKey)
+					VALUES (@Token, @UserId, @ApiKey);
 
 END

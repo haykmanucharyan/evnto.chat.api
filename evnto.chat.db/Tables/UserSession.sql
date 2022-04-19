@@ -2,6 +2,7 @@
 (
 	[Token] CHAR(64) NOT NULL, 
     [UserId] INT NOT NULL, 
+    [ApiKey] VARCHAR(256) NOT NULL, 
     CONSTRAINT [PK_UserSession] PRIMARY KEY NONCLUSTERED HASH ([Token]) WITH (BUCKET_COUNT = 15000017),
     INDEX [IX_UserSession_UserId] NONCLUSTERED ([UserId])
 )

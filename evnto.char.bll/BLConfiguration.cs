@@ -11,5 +11,7 @@
         public int SaltRepeatMin { get; set; }
 
         public int SaltRepeatMax { get; set; }
+
+        public string ApiKey { get; set; }
     }
 }

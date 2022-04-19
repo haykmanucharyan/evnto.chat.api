@@ -27,6 +27,8 @@ blConfig.RMQConnectionString = (string)cfg.GetValue(typeof(string), nameof(BLCon
 blConfig.SaltMinSeed = (int)cfg.GetValue(typeof(int), nameof(BLConfiguration.SaltMinSeed));
 blConfig.SaltRepeatMin = (int)cfg.GetValue(typeof(int), nameof(BLConfiguration.SaltRepeatMin));
 blConfig.SaltRepeatMax = (int)cfg.GetValue(typeof(int), nameof(BLConfiguration.SaltRepeatMax));
+// set the unique key for api instance
+blConfig.ApiKey = $"{Environment.MachineName}_{Guid.NewGuid()}";
 
 // create and inject BL factory
 IBLFactory factory = new BLFactory(blConfig);

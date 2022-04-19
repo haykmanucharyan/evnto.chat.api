@@ -11,5 +11,7 @@ namespace evnto.chat.bll.Interfaces
         List<User> GetOnlineUsers(int userId);
 
         int GetAuthenticatedUser(string token);
+
+        UserSession GetSessionByUser(int userId);
     }
 }

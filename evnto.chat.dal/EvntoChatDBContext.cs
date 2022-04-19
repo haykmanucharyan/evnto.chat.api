@@ -49,11 +49,12 @@ namespace evnto.chat.dal
 
         #region Methods
 
-        public void ExecSessionCreateSP(string token, int userId)
+        public void ExecSessionCreateSP(string token, int userId, string apiKey)
         {
-            Database.ExecuteSqlRaw("EXEC dbo.SPCreateSession @Token, @UserId",
+            Database.ExecuteSqlRaw("EXEC dbo.SPCreateSession @Token, @UserId, @ApiKey",
                 new SqlParameter { ParameterName = "@Token", Value = token },
-                new SqlParameter { ParameterName = "@UserId", Value = userId });
+                new SqlParameter { ParameterName = "@UserId", Value = userId },
+                new SqlParameter { ParameterName = "@ApiKey", Value = apiKey });
         }
 
         #endregion

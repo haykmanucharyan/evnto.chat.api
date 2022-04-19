@@ -13,5 +13,9 @@ namespace evnto.chat.dal.Entities
         
         [Required]
         public int UserId { get; set; }
+
+        [Required]
+        [Column(TypeName = "VARCHAR(256)")]
+        public string ApiKey { get; set; }
     }
 }

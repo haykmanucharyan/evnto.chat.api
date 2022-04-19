@@ -36,7 +36,7 @@ namespace evnto.chat.bll.Implementations
                 // UserSession is in memory table, it's isolation level is snapshot,
                 // so to delete an old session and create a new one atomically native compiled stored procedure is used,
                 // because can't use EF's transaction
-                context.ExecSessionCreateSP(token, dbUser.UserId);
+                context.ExecSessionCreateSP(token, dbUser.UserId, Configuration.ApiKey);
 
                 return new UserSession() { Token = token, UserId = dbUser.UserId };
             }
@@ -112,6 +112,12 @@ namespace evnto.chat.bll.Implementations
 
                 return 0;
             }
+        }
+
+        public UserSession GetSessionByUser(int userId)
+        {
+            using (EvntoChatDBContext context = CreateDbContext())
+                return context.UserSessions.FirstOrDefault(us => us.UserId == userId);
         }
     }
 }
