@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace evnto.chat.dal.Entities
 {
-    [Table("User")]
+    [Table("Message")]
     [Index(nameof(ChatId), Name = "IX_Message_ChatId")]
     public class Message
     {

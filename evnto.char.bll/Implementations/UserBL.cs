@@ -12,7 +12,7 @@ namespace evnto.chat.bll.Implementations
         {
         }
 
-        public string SignIn(string userName, string password)
+        public UserSession SignIn(string userName, string password)
         {
             if (string.IsNullOrEmpty(userName))
                 throw new ArgumentNullException(Errors.EmptyUserName);
@@ -38,7 +38,7 @@ namespace evnto.chat.bll.Implementations
                 // because can't use EF's transaction
                 context.ExecSessionCreateSP(token, dbUser.UserId);
 
-                return token;
+                return new UserSession() { Token = token, UserId = dbUser.UserId };
             }
         }
 

@@ -40,10 +40,11 @@ namespace evnto.chat.api.Controllers
         }
 
         [HttpPost]
-        public string Post([FromBody] SignInModel signInModel)
+        public UserSessionModel Post([FromBody] SignInModel signInModel)
         {
             IUserBL bl = BLFactory.CreateUserBL();
-            return bl.SignIn(signInModel.UserName, signInModel.Password);
+            var session = bl.SignIn(signInModel.UserName, signInModel.Password);
+            return new UserSessionModel() { UserId = session.UserId, Token = session.Token };
         }
     }
 }

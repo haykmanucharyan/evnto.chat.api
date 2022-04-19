@@ -10,7 +10,8 @@ namespace evnto.chat.dal.Entities
     {
         [Key]
         public string Token { get; set; }
-
+        
+        [Required]
         public int UserId { get; set; }
     }
 }
