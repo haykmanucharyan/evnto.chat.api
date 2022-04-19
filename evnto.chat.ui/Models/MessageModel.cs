@@ -13,5 +13,7 @@
         public string Text { get; set; }
 
         public UserModel AuthorUser { get; set; }
+
+        public string AuthorUserInfo => AuthorUser?.UserInfo;
     }
 }

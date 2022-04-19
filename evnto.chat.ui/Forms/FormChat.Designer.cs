@@ -43,8 +43,14 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.listBoxChats = new System.Windows.Forms.ListBox();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.dataGridViewMessages = new System.Windows.Forms.DataGridView();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.textBoxMessage = new System.Windows.Forms.TextBox();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.buttonSend = new System.Windows.Forms.Button();
+            this.ColumnCreated = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnFrom = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.toolStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -53,6 +59,8 @@
             this.splitContainer1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMessages)).BeginInit();
+            this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -206,23 +214,82 @@
             this.listBoxChats.TabIndex = 1;
             this.listBoxChats.SelectedValueChanged += new System.EventHandler(this.listBoxChats_SelectedValueChanged);
             // 
+            // dataGridViewMessages
+            // 
+            this.dataGridViewMessages.AllowUserToAddRows = false;
+            this.dataGridViewMessages.AllowUserToDeleteRows = false;
+            this.dataGridViewMessages.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewMessages.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ColumnCreated,
+            this.ColumnFrom,
+            this.ColumnText});
+            this.dataGridViewMessages.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridViewMessages.Location = new System.Drawing.Point(0, 0);
+            this.dataGridViewMessages.Name = "dataGridViewMessages";
+            this.dataGridViewMessages.ReadOnly = true;
+            this.dataGridViewMessages.RowTemplate.Height = 25;
+            this.dataGridViewMessages.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.dataGridViewMessages.Size = new System.Drawing.Size(317, 287);
+            this.dataGridViewMessages.TabIndex = 1;
+            // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.textBoxMessage);
+            this.panel1.Controls.Add(this.panel2);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 287);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(317, 138);
             this.panel1.TabIndex = 0;
             // 
-            // dataGridViewMessages
+            // textBoxMessage
             // 
-            this.dataGridViewMessages.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewMessages.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridViewMessages.Location = new System.Drawing.Point(0, 0);
-            this.dataGridViewMessages.Name = "dataGridViewMessages";
-            this.dataGridViewMessages.RowTemplate.Height = 25;
-            this.dataGridViewMessages.Size = new System.Drawing.Size(317, 287);
-            this.dataGridViewMessages.TabIndex = 1;
+            this.textBoxMessage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxMessage.Location = new System.Drawing.Point(0, 0);
+            this.textBoxMessage.Multiline = true;
+            this.textBoxMessage.Name = "textBoxMessage";
+            this.textBoxMessage.Size = new System.Drawing.Size(229, 138);
+            this.textBoxMessage.TabIndex = 1;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.buttonSend);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel2.Location = new System.Drawing.Point(229, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(88, 138);
+            this.panel2.TabIndex = 0;
+            // 
+            // buttonSend
+            // 
+            this.buttonSend.Location = new System.Drawing.Point(7, 40);
+            this.buttonSend.Name = "buttonSend";
+            this.buttonSend.Size = new System.Drawing.Size(75, 63);
+            this.buttonSend.TabIndex = 0;
+            this.buttonSend.Text = "Send>";
+            this.buttonSend.UseVisualStyleBackColor = true;
+            this.buttonSend.Click += new System.EventHandler(this.buttonSend_Click);
+            // 
+            // ColumnCreated
+            // 
+            this.ColumnCreated.DataPropertyName = "Created";
+            this.ColumnCreated.HeaderText = "Timestamp";
+            this.ColumnCreated.Name = "ColumnCreated";
+            this.ColumnCreated.ReadOnly = true;
+            // 
+            // ColumnFrom
+            // 
+            this.ColumnFrom.DataPropertyName = "AuthorUserInfo";
+            this.ColumnFrom.HeaderText = "From";
+            this.ColumnFrom.Name = "ColumnFrom";
+            this.ColumnFrom.ReadOnly = true;
+            // 
+            // ColumnText
+            // 
+            this.ColumnText.DataPropertyName = "Text";
+            this.ColumnText.HeaderText = "Message";
+            this.ColumnText.Name = "ColumnText";
+            this.ColumnText.ReadOnly = true;
             // 
             // FormChat
             // 
@@ -244,6 +311,9 @@
             this.splitContainer1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMessages)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -267,5 +337,11 @@
         private ToolStripButton toolStripButtonCloseChat;
         private DataGridView dataGridViewMessages;
         private Panel panel1;
+        private TextBox textBoxMessage;
+        private Panel panel2;
+        private Button buttonSend;
+        private DataGridViewTextBoxColumn ColumnCreated;
+        private DataGridViewTextBoxColumn ColumnFrom;
+        private DataGridViewTextBoxColumn ColumnText;
     }
 }

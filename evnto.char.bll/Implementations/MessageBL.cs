@@ -14,7 +14,7 @@ namespace evnto.chat.bll.Implementations
 
         public void CreteMessage(int userId, int chatId, string text)
         {
-            if(!string.IsNullOrEmpty(text))
+            if(string.IsNullOrEmpty(text))
                 throw new ArgumentNullException(Errors.EmptyText);
 
             using (EvntoChatDBContext context = CreateDbContext())

@@ -28,6 +28,7 @@ namespace evnto.chat.ui.Forms
             _httpClient = httpClient;
             this.FormClosed += FormChat_FormClosed;
             InitializeComponent();
+            dataGridViewMessages.AutoGenerateColumns = false;
         }
 
         #endregion
@@ -129,8 +130,10 @@ namespace evnto.chat.ui.Forms
 
                 toolStripButtonCloseChat.Enabled = flag && chat.State == ChatState.Accepted;
 
-                flag = flag && chat.State == ChatState.Initiated && chat.RecipientUserId == _httpClient.Session.UserId;
-                toolStripButtonAcceptChat.Enabled = toolStripButtonRejectChat.Enabled = flag;
+                toolStripButtonAcceptChat.Enabled = toolStripButtonRejectChat.Enabled = 
+                    flag && chat.State == ChatState.Initiated && chat.RecipientUserId == _httpClient.Session.UserId;
+
+                buttonSend.Enabled = flag && chat.State == ChatState.Accepted;
 
                 if (chat.State == ChatState.Accepted)
                     await LoadMessages(chat.ChatId);
@@ -148,6 +151,20 @@ namespace evnto.chat.ui.Forms
 
             ChatModel chat = listBoxChats.SelectedValue as ChatModel;
             await _httpClient.SetChatStateAsync(chat.ChatId, ChatState.Closed);
+        }
+
+        private async void buttonSend_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(textBoxMessage.Text)) return;
+            
+            if (listBoxChats.DataSource == null && listBoxChats.SelectedValue == null) return;
+
+            ChatModel chat = listBoxChats.SelectedValue as ChatModel;
+
+            if (chat.State != ChatState.Accepted) return;
+
+            await _httpClient.SendMessageAsync(chat.ChatId, textBoxMessage.Text);
+            textBoxMessage.Clear();
         }
 
         #endregion

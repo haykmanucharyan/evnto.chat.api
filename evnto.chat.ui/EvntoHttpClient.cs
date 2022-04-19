@@ -150,6 +150,16 @@ namespace evnto.chat.ui
             return await GetAsync<ObservableCollection<MessageModel>>("message", new Dictionary<string, string>() { { "chatId", chatId.ToString() } });
         }
 
+        public async Task SendMessageAsync(int chatId, string text)
+        {
+            MessageModel mm = new MessageModel();
+            mm.AuthorUserId = Session.UserId;
+            mm.ChatId = chatId;
+            mm.Text = text;
+
+            await PutAsync("message", mm);
+        }
+
         #endregion
     }
 }
