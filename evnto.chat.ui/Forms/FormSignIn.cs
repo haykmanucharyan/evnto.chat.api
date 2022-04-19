@@ -34,7 +34,8 @@ namespace evnto.chat.ui.Forms
             {
                 FormChat frm = new FormChat(httpClient);
                 frm.Show();
-                textBoxPassword.Text = string.Empty;
+                textBoxUserName.Clear();
+                textBoxPassword.Clear();
                 Hide();
             }
         }
