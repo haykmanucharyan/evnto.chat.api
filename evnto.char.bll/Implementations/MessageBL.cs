@@ -1,6 +1,7 @@
 ﻿using evnto.chat.bll.Interfaces;
 using evnto.chat.dal;
 using evnto.chat.dal.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace evnto.chat.bll.Implementations
 {
@@ -47,7 +48,7 @@ namespace evnto.chat.bll.Implementations
                 if (chat == null)
                     throw new Exception(Errors.ChatMissing);
 
-                return context.Messages.Where(m => m.ChatId == chatId).ToList();
+                return context.Messages.Include(m => m.AuthorUser).Where(m => m.ChatId == chatId).ToList();
             }
         }
     }

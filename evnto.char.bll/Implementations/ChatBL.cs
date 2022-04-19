@@ -1,6 +1,7 @@
 ﻿using evnto.chat.bll.Interfaces;
 using evnto.chat.dal;
 using evnto.chat.dal.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace evnto.chat.bll.Implementations
 {
@@ -65,7 +66,7 @@ namespace evnto.chat.bll.Implementations
         {
             using (EvntoChatDBContext context = CreateDbContext())
             {
-                return (from c in context.Chats
+                return (from c in context.Chats.Include(c => c.RecipientUser).Include(c => c.InitiatorUser)
                         where (c.InitiatorUserId == userId || c.RecipientUserId == userId)
                         && (c.State == (byte)ChatState.Initiated || c.State == (byte)ChatState.Accepted)
                         select c).ToList();

@@ -27,5 +27,7 @@ namespace evnto.chat.dal.Entities
         [Column(TypeName = "NVARCHAR(4000)")]
         [Required]
         public string Text { get; set; }
+
+        public virtual User AuthorUser { get; set; }
     }
 }

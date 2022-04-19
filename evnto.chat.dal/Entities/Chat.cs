@@ -26,5 +26,9 @@ namespace evnto.chat.dal.Entities
         [Column(TypeName = "DATETIMEOFFSET(3)")]
         [Required]
         public DateTimeOffset Created { get; set; }
+
+        public virtual User InitiatorUser { get; set; }
+
+        public virtual User RecipientUser { get; set; }
     }
 }

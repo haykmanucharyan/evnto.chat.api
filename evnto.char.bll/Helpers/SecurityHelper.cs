@@ -4,9 +4,15 @@ namespace evnto.chat.bll.Helpers
 {
     internal class SecurityHelper : ISecurityHelper
     {
+        #region Fields
+
         int _saltMinSeed;
         int _saltRepeatMin;
         int _saltRepeatMax;
+
+        #endregion
+
+        #region Ctor
 
         public SecurityHelper(int saltMinSeed, int saltCountMin, int saltCountMax)
         {
@@ -15,11 +21,19 @@ namespace evnto.chat.bll.Helpers
             _saltRepeatMax = saltCountMax;
         }
 
+        #endregion
+
+        #region Private methods
+
         private byte[] ComputeHash(byte[] data)
         {
             using (SHA256 hasher = SHA256.Create())
                 return hasher.ComputeHash(data, 0, data.Length);
         }
+
+        #endregion
+
+        #region Interface implementation
 
         public int GenerateSalt()
         {
@@ -45,5 +59,7 @@ namespace evnto.chat.bll.Helpers
 
             return ComputeHash(buffer).ToHexString();
         }
+
+        #endregion
     }
 }

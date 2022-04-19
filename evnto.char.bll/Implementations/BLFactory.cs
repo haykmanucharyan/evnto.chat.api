@@ -4,12 +4,22 @@ namespace evnto.chat.bll.Implementations
 {
     public class BLFactory : IBLFactory
     {
+        #region Fields
+
         private BLConfiguration _config;
+
+        #endregion
+
+        #region Ctor
 
         public BLFactory(BLConfiguration config)
         { 
             _config = config;
         }
+
+        #endregion
+
+        #region Interface implementation
 
         public IChatBL CreateChatBL()
         {
@@ -25,5 +35,7 @@ namespace evnto.chat.bll.Implementations
         {
             return new MessageBL(_config);
         }
+
+        #endregion
     }
 }

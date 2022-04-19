@@ -1,4 +1,4 @@
-﻿namespace evnto.chat.api.Models
+﻿namespace evnto.chat.ui.Models
 {
     public class ChatModel
     {
@@ -15,6 +15,8 @@
         public UserModel InitiatorUser { get; set; }
 
         public UserModel RecipientUser { get; set; }
+
+        public string ChatInfo { get; set; }
     }
 
     public enum ChatState : byte

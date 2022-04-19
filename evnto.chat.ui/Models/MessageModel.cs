@@ -1,4 +1,4 @@
-﻿namespace evnto.chat.api.Models
+﻿namespace evnto.chat.ui.Models
 {
     public class MessageModel
     {

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace evnto.chat.ui.Models
+﻿namespace evnto.chat.ui.Models
 {
-    internal class UserSessionModel
+    public class UserSessionModel
     {
         public string Token { get; set; }
 

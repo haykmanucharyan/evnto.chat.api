@@ -54,7 +54,9 @@ namespace evnto.chat.api.Controllers
                        Created = c.Created,
                        InitiatorUserId = c.InitiatorUserId,
                        RecipientUserId = c.RecipientUserId,
-                       State = (ChatState)c.State
+                       State = (ChatState)c.State,
+                       InitiatorUser = new UserModel() { FullName = c.InitiatorUser.FullName, UserId = c.InitiatorUserId, UserName = c.InitiatorUser.UserName },
+                       RecipientUser = new UserModel() { FullName = c.RecipientUser.FullName, UserId = c.RecipientUserId, UserName= c.RecipientUser.UserName }
                    };
         }
     }

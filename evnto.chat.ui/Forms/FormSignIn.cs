@@ -30,9 +30,12 @@ namespace evnto.chat.ui.Forms
             }
 
             EvntoHttpClient httpClient = new EvntoHttpClient(textBoxUrl.Text);
-            if (await httpClient.SignIn(textBoxUserName.Text, textBoxPassword.Text))
-            { 
-            
+            if (await httpClient.SignInAsync(textBoxUserName.Text, textBoxPassword.Text))
+            {
+                FormChat frm = new FormChat(httpClient);
+                frm.Show();
+                textBoxPassword.Text = string.Empty;
+                Hide();
             }
         }
 
@@ -78,7 +81,7 @@ namespace evnto.chat.ui.Forms
 
             EvntoHttpClient httpClient = new EvntoHttpClient(textBoxUrl.Text);
 
-            await httpClient.SignUp(textBoxSignupUsername.Text, textBoxFullName.Text, textBoxSignupPassword.Text);
+            await httpClient.SignUpAsync(textBoxSignupUsername.Text, textBoxFullName.Text, textBoxSignupPassword.Text);
             MessageBox.Show("Done");
         }
     }

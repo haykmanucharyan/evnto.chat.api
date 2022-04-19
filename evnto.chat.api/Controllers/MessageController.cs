@@ -29,7 +29,8 @@ namespace evnto.chat.api.Controllers
                        MessageId = m.MessageId,
                        AuthorUserId = m.AuthorUserId,
                        Created = m.Created,
-                       Text = m.Text
+                       Text = m.Text,
+                       AuthorUser = new UserModel() { FullName = m.AuthorUser.FullName, UserId = m.AuthorUserId, UserName = m.AuthorUser.UserName }
                    };
         }
 

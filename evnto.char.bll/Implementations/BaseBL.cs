@@ -5,20 +5,16 @@ namespace evnto.chat.bll.Implementations
 {
     internal class BaseBL
     {
+        #region Fields
+
         private readonly BLConfiguration _config;
         private ISecurityHelper _securityHelper = null;
 
+        #endregion
+
+        #region Properties
+
         protected BLConfiguration Configuration => _config;
-
-        public BaseBL(BLConfiguration config)
-        {
-            _config = config;
-        }
-
-        protected EvntoChatDBContext CreateDbContext()
-        {
-            return new EvntoChatDBContext(_config.DBConnectionString);
-        }
 
         public ISecurityHelper SecurityHelper
         {
@@ -30,5 +26,25 @@ namespace evnto.chat.bll.Implementations
                 return _securityHelper;
             }
         }
+
+        #endregion
+
+        #region Ctor
+
+        public BaseBL(BLConfiguration config)
+        {
+            _config = config;
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected EvntoChatDBContext CreateDbContext()
+        {
+            return new EvntoChatDBContext(_config.DBConnectionString);
+        }
+
+        #endregion
     }
 }

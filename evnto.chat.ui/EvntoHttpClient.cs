@@ -1,13 +1,25 @@
 ﻿using evnto.chat.ui.Models;
 using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 using System.Text;
 
 namespace evnto.chat.ui
 {
-    internal class EvntoHttpClient
+    public class EvntoHttpClient
     {
+        #region Properties
+
         string _url;
-        UserSessionModel _session = null;
+
+        #endregion
+
+        #region Properties
+
+        public UserSessionModel Session { get; private set; }
+
+        #endregion
+
+        #region Ctor
 
         public EvntoHttpClient(string baseUrl)
         {
@@ -16,6 +28,10 @@ namespace evnto.chat.ui
             if(!_url.EndsWith("/"))
                 _url = _url + "/";
         }
+
+        #endregion
+
+        #region Private methods
 
         private async Task<string> HandleResult(HttpResponseMessage response)
         {
@@ -27,12 +43,12 @@ namespace evnto.chat.ui
             return body;
         }
 
-        private async Task Put<T>(string controller, T requestObject)
+        private async Task PutAsync<T>(string controller, T requestObject)
         { 
             HttpClient client = new HttpClient();
 
-            if (_session!= null && !string.IsNullOrEmpty(_session.Token))
-                client.DefaultRequestHeaders.Add("Token", _session.Token);
+            if (Session!= null && !string.IsNullOrEmpty(Session.Token))
+                client.DefaultRequestHeaders.Add("Token", Session.Token);
 
             string requestJson = JsonConvert.SerializeObject(requestObject);
 
@@ -40,12 +56,34 @@ namespace evnto.chat.ui
             await HandleResult(response);
         }
 
-        private async Task<T2> Post<T1, T2>(string controller, T1 requestObject)
+        private async Task<T> GetAsync<T>(string controller, Dictionary<string, string> parameters)
         {
             HttpClient client = new HttpClient();
 
-            if (_session != null && !string.IsNullOrEmpty(_session.Token))
-                client.DefaultRequestHeaders.Add("Token", _session.Token);
+            if (Session != null && !string.IsNullOrEmpty(Session.Token))
+                client.DefaultRequestHeaders.Add("Token", Session.Token);
+
+            UriBuilder uriBuilder = new UriBuilder($"{_url}{controller}");
+            if (parameters != null && parameters.Count > 0)
+            {
+                uriBuilder.Query = "";
+                foreach (KeyValuePair<string, string> kvp in parameters)
+                    uriBuilder.Query += $"{kvp.Key}={kvp.Value}&";
+
+                uriBuilder.Query = uriBuilder.Query.TrimEnd('&');
+            }
+
+            HttpResponseMessage response = await client.GetAsync(uriBuilder.Uri);
+            string json = await HandleResult(response);
+            return JsonConvert.DeserializeObject<T>(json);
+        }
+
+        private async Task<T2> PostAsync<T1, T2>(string controller, T1 requestObject)
+        {
+            HttpClient client = new HttpClient();
+
+            if (Session != null && !string.IsNullOrEmpty(Session.Token))
+                client.DefaultRequestHeaders.Add("Token", Session.Token);
 
             string requestJson = JsonConvert.SerializeObject(requestObject);
 
@@ -55,24 +93,63 @@ namespace evnto.chat.ui
             return JsonConvert.DeserializeObject<T2>(json);
         }
 
-        public async Task<bool> SignIn(string userName, string password)
+        #endregion
+
+        #region Public methods
+
+        public async Task<bool> SignInAsync(string userName, string password)
         {
             SignInModel sm = new SignInModel();
             sm.UserName = userName;
             sm.Password = password;
 
-            _session = await Post<SignInModel, UserSessionModel>("user", sm);
+            Session = await PostAsync<SignInModel, UserSessionModel>("user", sm);
             return true;
         }
 
-        public async Task SignUp(string userNmae, string fullName, string password)
+        public async Task SignUpAsync(string userNmae, string fullName, string password)
         {
             SignUpModel sm = new SignUpModel();
             sm.FullName = fullName;
             sm.UserName = userNmae;
             sm.Password = password;
 
-            await Put("user", sm);
+            await PutAsync("user", sm);
         }
+
+        public async Task<ObservableCollection<UserModel>> GetOnlineUsersAsync()
+        {
+            return await GetAsync<ObservableCollection<UserModel>>("user", null);
+        }
+
+        public async Task<ObservableCollection<ChatModel>> GetActiveChatsAsync()
+        {
+            return await GetAsync<ObservableCollection<ChatModel>>("chat", null);
+        }
+
+        public async Task StartChatAsync(int recipientUserId)
+        {
+            ChatModel chat = new ChatModel();
+            chat.RecipientUserId = recipientUserId;
+            chat.InitiatorUserId = Session.UserId;
+
+            await PutAsync("chat", chat);
+        }
+
+        public async Task SetChatStateAsync(int chatId, ChatState state)
+        {
+            ChatModel chat = new ChatModel();
+            chat.ChatId = chatId;
+            chat.State = state;
+
+            await PostAsync<ChatModel, string>("chat", chat);
+        }
+
+        public async Task<ObservableCollection<MessageModel>> GetMessagesAsync(int chatId)
+        {
+            return await GetAsync<ObservableCollection<MessageModel>>("message", new Dictionary<string, string>() { { "chatId", chatId.ToString() } });
+        }
+
+        #endregion
     }
 }

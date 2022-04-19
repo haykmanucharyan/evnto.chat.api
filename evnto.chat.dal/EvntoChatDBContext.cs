@@ -5,8 +5,14 @@ using Microsoft.EntityFrameworkCore;
 namespace evnto.chat.dal
 {
     public class EvntoChatDBContext : DbContext
-    {        
+    {
+        #region Fields
+
         private string _dbConnectionString;
+
+        #endregion
+
+        #region Properties
 
         public DbSet<User> Users { get; set; }
 
@@ -16,10 +22,18 @@ namespace evnto.chat.dal
 
         public DbSet<Message> Messages { get; set; }
 
+        #endregion
+
+        #region Ctor
+
         public EvntoChatDBContext(string connectionString)
         {
             _dbConnectionString = connectionString;
         }
+
+        #endregion
+
+        #region Event overrides
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -31,11 +45,17 @@ namespace evnto.chat.dal
             modelBuilder.Entity<UserSession>().IsMemoryOptimized();
         }
 
+        #endregion
+
+        #region Methods
+
         public void ExecSessionCreateSP(string token, int userId)
         {
             Database.ExecuteSqlRaw("EXEC dbo.SPCreateSession @Token, @UserId",
                 new SqlParameter { ParameterName = "@Token", Value = token },
                 new SqlParameter { ParameterName = "@UserId", Value = userId });
         }
+
+        #endregion
     }
 }
