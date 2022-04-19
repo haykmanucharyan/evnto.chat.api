@@ -1,0 +1,10 @@
+﻿CREATE TABLE [dbo].[UserSession]
+(
+	[Token] CHAR(64) NOT NULL, 
+    [UserId] INT NOT NULL, 
+    CONSTRAINT [PK_UserSession] PRIMARY KEY NONCLUSTERED HASH ([Token]) WITH (BUCKET_COUNT = 15000017),
+    INDEX [IX_UserSession_UserId] NONCLUSTERED ([UserId])
+)
+WITH  
+        (MEMORY_OPTIMIZED = ON,  
+        DURABILITY = SCHEMA_AND_DATA);
