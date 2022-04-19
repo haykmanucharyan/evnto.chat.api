@@ -4,6 +4,7 @@ using evnto.chat.api.ErrorHandling;
 using evnto.chat.bll;
 using evnto.chat.bll.Implementations;
 using evnto.chat.bll.Interfaces;
+using evnto.chat.bus;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,8 +23,14 @@ configBuilder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: t
 IConfigurationRoot cfg = configBuilder.Build();
 
 BLConfiguration blConfig = new BLConfiguration();
+// db
 blConfig.DBConnectionString = (string)cfg.GetValue(typeof(string), nameof(BLConfiguration.DBConnectionString));
-blConfig.RMQConnectionString = (string)cfg.GetValue(typeof(string), nameof(BLConfiguration.RMQConnectionString));
+// rmq
+blConfig.RMQHost = (string)cfg.GetValue(typeof(string), nameof(BLConfiguration.RMQHost));
+blConfig.RMQPort = (int)cfg.GetValue(typeof(int), nameof(BLConfiguration.RMQPort));
+blConfig.RMQUser = (string)cfg.GetValue(typeof(string), nameof(BLConfiguration.RMQUser));
+blConfig.RMQPassword = (string)cfg.GetValue(typeof(string), nameof(BLConfiguration.RMQPassword));
+// security
 blConfig.SaltMinSeed = (int)cfg.GetValue(typeof(int), nameof(BLConfiguration.SaltMinSeed));
 blConfig.SaltRepeatMin = (int)cfg.GetValue(typeof(int), nameof(BLConfiguration.SaltRepeatMin));
 blConfig.SaltRepeatMax = (int)cfg.GetValue(typeof(int), nameof(BLConfiguration.SaltRepeatMax));
@@ -69,4 +76,20 @@ WebSocketOptions wsOptions = new WebSocketOptions()
 };
 app.UseWebSockets(wsOptions);
 
+// rmq part
+IRmqConnector rmqConnector = factory.GetRmqConnector();
+rmqConnector.ConnectAndInit();
+rmqConnector.RmqMessageArrived += RmqConnector_RmqMessageArrived;
+rmqConnector.BeginConsume();
+
+void RmqConnector_RmqMessageArrived(byte[] message)
+{
+    
+}
+
 app.Run();
+
+// rmq cleanup
+rmqConnector.RmqMessageArrived -= RmqConnector_RmqMessageArrived;
+rmqConnector.Dispose();
+

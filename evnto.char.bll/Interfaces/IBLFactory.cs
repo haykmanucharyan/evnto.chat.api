@@ -1,4 +1,6 @@
-﻿namespace evnto.chat.bll.Interfaces
+﻿using evnto.chat.bus;
+
+namespace evnto.chat.bll.Interfaces
 {
     public interface IBLFactory
     {
@@ -7,5 +9,7 @@
         IChatBL CreateChatBL();
 
         IMessageBL CreateMessageBL();
+
+        IRmqConnector GetRmqConnector();
     }
 }

@@ -4,7 +4,13 @@
     {
         public string DBConnectionString { get; set; }
 
-        public string RMQConnectionString { get; set; }
+        public string RMQHost { get; set; }
+
+        public int RMQPort { get; set; }
+
+        public string RMQUser { get; set; }
+
+        public string RMQPassword { get; set; }
 
         public int SaltMinSeed { get; set; }
 
