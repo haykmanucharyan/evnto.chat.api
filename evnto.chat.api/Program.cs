@@ -78,11 +78,10 @@ app.UseWebSockets(wsOptions);
 
 // rmq part
 IRmqConnector rmqConnector = factory.GetRmqConnector();
-rmqConnector.ConnectAndInit();
 rmqConnector.RmqMessageArrived += RmqConnector_RmqMessageArrived;
 rmqConnector.BeginConsume();
 
-void RmqConnector_RmqMessageArrived(byte[] message)
+void RmqConnector_RmqMessageArrived(bool isGlobal, RmqMessage message)
 {
     
 }

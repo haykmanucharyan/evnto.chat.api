@@ -7,7 +7,7 @@ namespace evnto.chat.bll.Implementations
 {
     internal class MessageBL : BaseBL, IMessageBL
     {
-        internal MessageBL(BLConfiguration config) : base(config)
+        internal MessageBL(IBLFactory factory) : base(factory)
         {
             
         }

@@ -1,4 +1,5 @@
 ﻿using evnto.chat.bll.Helpers;
+using evnto.chat.bll.Interfaces;
 using evnto.chat.dal;
 
 namespace evnto.chat.bll.Implementations
@@ -7,16 +8,18 @@ namespace evnto.chat.bll.Implementations
     {
         #region Fields
 
-        private readonly BLConfiguration _config;
+        private readonly IBLFactory _bLFactory;
         private ISecurityHelper _securityHelper = null;
 
         #endregion
 
         #region Properties
 
-        protected BLConfiguration Configuration => _config;
+        protected IBLFactory BLFactory => _bLFactory;
 
-        public ISecurityHelper SecurityHelper
+        protected BLConfiguration Configuration => _bLFactory.Configuration;
+
+        protected ISecurityHelper SecurityHelper
         {
             get
             {
@@ -31,9 +34,9 @@ namespace evnto.chat.bll.Implementations
 
         #region Ctor
 
-        public BaseBL(BLConfiguration config)
+        public BaseBL(IBLFactory blFactory)
         {
-            _config = config;
+            _bLFactory = blFactory;
         }
 
         #endregion
@@ -42,7 +45,7 @@ namespace evnto.chat.bll.Implementations
 
         protected EvntoChatDBContext CreateDbContext()
         {
-            return new EvntoChatDBContext(_config.DBConnectionString);
+            return new EvntoChatDBContext(_bLFactory.Configuration.DBConnectionString);
         }
 
         #endregion

@@ -4,6 +4,8 @@ namespace evnto.chat.bll.Interfaces
 {
     public interface IBLFactory
     {
+        BLConfiguration Configuration { get; }
+
         IUserBL CreateUserBL();
 
         IChatBL CreateChatBL();

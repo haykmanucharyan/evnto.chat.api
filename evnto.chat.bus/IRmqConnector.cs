@@ -6,11 +6,9 @@ namespace evnto.chat.bus
     {
         event RmqMessageHandler RmqMessageArrived;
 
-        void ConnectAndInit();
+        void PublishGlobal(RmqMessage message);
 
-        void PublishGlobal(byte[] message);
-
-        void PublishRouted(byte[] message);
+        void PublishRouted(RmqMessage message);
 
         void BeginConsume();
     }

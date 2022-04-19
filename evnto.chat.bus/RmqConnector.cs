@@ -1,33 +1,36 @@
 ﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQ.Client.Exceptions;
 
 namespace evnto.chat.bus
 {
     public class RmqConnector : IRmqConnector
     {
-        public delegate void RmqMessageHandler(byte[] message);
+        public delegate void RmqMessageHandler(bool isGlobal, RmqMessage message);
 
         public event RmqMessageHandler RmqMessageArrived;
 
         ConnectionFactory _factory;
         IConnection _connection;
-        IModel _channel;
+        IModel _channelConsumer;
         string _apiKey;
 
-        const string _exchangeGlobal = "evnto.chat.global";
-        const string _exchangeRouted = "evnto.chat.routed";
-
-        const string _queueGlobal = "evnto.chat.global";
+        const string _exchangeName = "evnto.chat.exchange";
         const string _queueRouted = "evnto.chat.routed_";
+
         string _routedQueueName;
 
-        const int _maxLength = 8192; // 8KB
-        const int _ttl = 30_000; // 30 seconds
-        const int _expires = 1_800_000; // 30 minutes
+        Dictionary<string, object> _queueArgs = new Dictionary<string, object>()
+                                                    {
+                                                        { "x-max-length", 8192 }, // 8KB
+                                                        { "x-message-ttl", 30_000 }, // 30 seconds
+                                                        { "x-expires", 1_800_000 } // 30 minutes
+                                                    };
 
         public RmqConnector(string apiKey, string host, int port, string username, string password)
         {
             _apiKey = apiKey;
+            _routedQueueName = _queueRouted + _apiKey;
 
             _factory = new ConnectionFactory()
             {
@@ -41,83 +44,80 @@ namespace evnto.chat.bus
             };
         }
 
-        public void ConnectAndInit()
+        private bool Connect()
         {
-            _connection = _factory.CreateConnection();
-            _channel = _connection.CreateModel();
+            try
+            {
+                if (_connection == null || !_connection.IsOpen)
+                    _connection = _factory.CreateConnection();
 
-            _channel.ExchangeDeclare(_exchangeGlobal, "direct", true, false);
-            _channel.ExchangeDeclare(_exchangeRouted, "fanout", true, false);
-
-            _channel.QueueDeclare(_queueGlobal, true, false, false, 
-                new Dictionary<string, object>() 
-                {
-                    { "x-max-length", _maxLength }, 
-                    { "x-message-ttl", _ttl }, 
-                    { "x-expires", _expires } 
-                });
-
-            _routedQueueName = _queueRouted + _apiKey;
-
-            _channel.QueueDeclare(_routedQueueName, true, false, true, // auto delete routed one
-                new Dictionary<string, object>()
-                {
-                    { "x-max-length", _maxLength },
-                    { "x-message-ttl", _ttl },
-                    { "x-expires", _expires }
-                });
-
-            _channel.QueueBind(_queueGlobal, _exchangeGlobal, "*");
-            _channel.QueueBind(_routedQueueName, _exchangeRouted, _apiKey);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
-        public void PublishGlobal(byte[] message)
+        private void PublishInternal(RmqMessage message, bool isGlobal)
         {
-            var properties = _channel.CreateBasicProperties();
-            properties.DeliveryMode = 2;
-            properties.ContentType = "application/json";
-            properties.Timestamp = new AmqpTimestamp(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+            if (!Connect())
+                throw new Exception("RMQ connection failed.");
 
-            _channel.BasicPublish(_exchangeGlobal, "*", properties, message);
+            using (IModel channel = _connection.CreateModel())
+            {
+                channel.ExchangeDeclare(_exchangeName, "fanout", true, false);
+
+                var properties = channel.CreateBasicProperties();
+                properties.DeliveryMode = 2;
+                properties.ContentType = "application/json";
+                properties.Timestamp = new AmqpTimestamp(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+
+                channel.BasicPublish(_exchangeName, isGlobal ? "*" : _routedQueueName, properties, message.ToBytes());
+            }
         }
 
-        public void PublishRouted(byte[] message)
+        public void PublishGlobal(RmqMessage message)
         {
-            var properties = _channel.CreateBasicProperties();
-            properties.DeliveryMode = 2;
-            properties.ContentType = "application/json";
-            properties.Timestamp = new AmqpTimestamp(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+            PublishInternal(message, true);
+        }
 
-            _channel.BasicPublish(_exchangeRouted, _apiKey, properties, message);
+        public void PublishRouted(RmqMessage message)
+        {
+            PublishInternal(message, false);
         }
 
         public void Dispose()
         {
-            _channel?.Dispose();
+            _channelConsumer?.Dispose();
+            _channelConsumer = null;
             _connection?.Dispose();
-            _channel = null;
             _connection = null;
         }
 
         public void BeginConsume()
         {
-            var consumerGlobal = new EventingBasicConsumer(_channel);
-            consumerGlobal.Received += Consumer_Received;
+            if (!Connect())
+                throw new Exception("RMQ connection failed.");
 
-            var consumerRouted = new EventingBasicConsumer(_channel);
-            consumerRouted.Received += Consumer_Received;
+            _channelConsumer = _connection.CreateModel();
+            _channelConsumer.ExchangeDeclare(_exchangeName, "fanout", true, false);
 
-            _channel.BasicConsume(_queueGlobal, true, consumerGlobal);
-            _channel.BasicConsume(_routedQueueName, true, consumerRouted);
+            _channelConsumer.QueueDeclare(_routedQueueName, true, false, true, _queueArgs); // auto delete queue
+
+            _channelConsumer.QueueBind(_routedQueueName, _exchangeName, _apiKey);
+
+            EventingBasicConsumer consumer = new EventingBasicConsumer(_channelConsumer);
+            consumer.Received += Consumer_Received;
+
+            _channelConsumer.BasicConsume(_routedQueueName, true, consumer);
         }
 
         private void Consumer_Received(object sender, BasicDeliverEventArgs e)
         {
             EventingBasicConsumer consumer = sender as EventingBasicConsumer;
 
-            consumer.Model.BasicAck(e.DeliveryTag, false);
-
-            RmqMessageArrived?.Invoke(e.Body.ToArray());
+            RmqMessageArrived?.Invoke(e.RoutingKey == "*", RmqMessage.FromBytes(e.Body.ToArray()));
         }
     }
 }

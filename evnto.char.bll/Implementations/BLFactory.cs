@@ -13,6 +13,12 @@ namespace evnto.chat.bll.Implementations
 
         #endregion
 
+        #region Properties
+
+        public BLConfiguration Configuration => _config;
+
+        #endregion
+
         #region Ctor
 
         public BLFactory(BLConfiguration config)
@@ -26,17 +32,17 @@ namespace evnto.chat.bll.Implementations
 
         public IChatBL CreateChatBL()
         {
-            return new ChatBL(_config);
+            return new ChatBL(this);
         }
 
         public IUserBL CreateUserBL()
         {
-            return new UserBL(_config);
+            return new UserBL(this);
         }
 
         public IMessageBL CreateMessageBL()
         {
-            return new MessageBL(_config);
+            return new MessageBL(this);
         }
 
         public IRmqConnector GetRmqConnector()

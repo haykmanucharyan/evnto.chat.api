@@ -1,4 +1,5 @@
 ﻿using evnto.chat.bll.Interfaces;
+using evnto.chat.bus;
 using evnto.chat.dal;
 using evnto.chat.dal.Entities;
 using Microsoft.Data.SqlClient;
@@ -8,7 +9,7 @@ namespace evnto.chat.bll.Implementations
 {
     internal class UserBL : BaseBL, IUserBL
     {
-        internal UserBL(BLConfiguration config) : base(config)
+        internal UserBL(IBLFactory factory) : base(factory)
         {
         }
 
@@ -37,6 +38,14 @@ namespace evnto.chat.bll.Implementations
                 // so to delete an old session and create a new one atomically native compiled stored procedure is used,
                 // because can't use EF's transaction
                 context.ExecSessionCreateSP(token, dbUser.UserId, Configuration.ApiKey);
+
+                // rmq publish
+                RmqMessage rmqMessage = new RmqMessage(RmqMessageType.SignIn);
+                rmqMessage.PayLoad.Add(nameof(User.UserId), dbUser.UserId.ToString());
+                rmqMessage.PayLoad.Add(nameof(User.UserName), dbUser.UserName);
+                rmqMessage.PayLoad.Add(nameof(User.FullName), dbUser.FullName);
+
+                BLFactory.GetRmqConnector().PublishGlobal(rmqMessage);
 
                 return new UserSession() { Token = token, UserId = dbUser.UserId };
             }
@@ -130,6 +139,12 @@ namespace evnto.chat.bll.Implementations
         {
             using (EvntoChatDBContext context = CreateDbContext())
                 context.ExecSignOutSP(userId);
+
+            // rmq publish
+            RmqMessage rmqMessage = new RmqMessage(RmqMessageType.SignOut);
+            rmqMessage.PayLoad.Add(nameof(User.UserId), userId.ToString());
+
+            BLFactory.GetRmqConnector().PublishGlobal(rmqMessage);
         }
     }
 }
