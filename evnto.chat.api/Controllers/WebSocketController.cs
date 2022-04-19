@@ -12,7 +12,7 @@ namespace evnto.chat.api.Controllers
     {
         private readonly ILogger<UserController> _logger;
 
-        private ConcurrentDictionary<string, WebSocket> _sockets = new ConcurrentDictionary<string, WebSocket>(); 
+        private ConcurrentDictionary<int, WebSocket> _sockets = new ConcurrentDictionary<int, WebSocket>(); 
 
         public WebSocketController(ILogger<UserController> logger, IBLFactory blFactory) : base(blFactory)
         {
@@ -27,8 +27,13 @@ namespace evnto.chat.api.Controllers
 
             if (context.WebSockets.IsWebSocketRequest)
             {
-                WebSocket socket = await context.WebSockets.AcceptWebSocketAsync();                    
-                _sockets.TryAdd(context.Request.Headers["Token"], socket);
+                int userId = GetAuthenticatedUser();
+                WebSocket socket = await context.WebSockets.AcceptWebSocketAsync();
+                if (_sockets.TryAdd(userId, socket))
+                {
+                    IUserBL bl = BLFactory.CreateUserBL();
+                    bl.UpdateSessionApiKey(context.Request.Headers["Token"]);
+                }
             }
             else
                 context.Response.StatusCode = 400; // bad request

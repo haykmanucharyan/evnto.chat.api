@@ -57,6 +57,13 @@ namespace evnto.chat.dal
                 new SqlParameter { ParameterName = "@ApiKey", Value = apiKey });
         }
 
+        public void ExecSessionApiKeyUpdateSP(string token, string apiKey)
+        {
+            Database.ExecuteSqlRaw("EXEC dbo.SPSessionUpdateApiKey @Token, @ApiKey",
+                new SqlParameter { ParameterName = "@Token", Value = token },
+                new SqlParameter { ParameterName = "@ApiKey", Value = apiKey });
+        }
+
         #endregion
     }
 }

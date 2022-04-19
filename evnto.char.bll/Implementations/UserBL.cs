@@ -119,5 +119,11 @@ namespace evnto.chat.bll.Implementations
             using (EvntoChatDBContext context = CreateDbContext())
                 return context.UserSessions.FirstOrDefault(us => us.UserId == userId);
         }
+
+        public void UpdateSessionApiKey(string token)
+        {
+            using (EvntoChatDBContext context = CreateDbContext())
+                context.ExecSessionApiKeyUpdateSP(token, Configuration.ApiKey);
+        }
     }
 }
