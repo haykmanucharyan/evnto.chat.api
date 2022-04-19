@@ -8,7 +8,7 @@ namespace evnto.chat.bus
 
         void PublishGlobal(RmqMessage message);
 
-        void PublishRouted(RmqMessage message);
+        void PublishRouted(string routeKey, RmqMessage message);
 
         void BeginConsume();
     }

@@ -24,7 +24,7 @@ namespace evnto.chat.bus
                                                     {
                                                         { "x-max-length", 8192 }, // 8KB
                                                         { "x-message-ttl", 30_000 }, // 30 seconds
-                                                        { "x-expires", 1_800_000 } // 30 minutes
+                                                        { "x-expires", 108_000_000 } // 30 minutes
                                                     };
 
         public RmqConnector(string apiKey, string host, int port, string username, string password)
@@ -59,7 +59,7 @@ namespace evnto.chat.bus
             }
         }
 
-        private void PublishInternal(RmqMessage message, bool isGlobal)
+        private void PublishInternal(RmqMessage message, string routeKey)
         {
             if (!Connect())
                 throw new Exception("RMQ connection failed.");
@@ -73,18 +73,18 @@ namespace evnto.chat.bus
                 properties.ContentType = "application/json";
                 properties.Timestamp = new AmqpTimestamp(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
 
-                channel.BasicPublish(_exchangeName, isGlobal ? "*" : _routedQueueName, properties, message.ToBytes());
+                channel.BasicPublish(_exchangeName, routeKey, properties, message.ToBytes());
             }
         }
 
         public void PublishGlobal(RmqMessage message)
         {
-            PublishInternal(message, true);
+            PublishInternal(message, "*");
         }
 
-        public void PublishRouted(RmqMessage message)
+        public void PublishRouted(string routeKey, RmqMessage message)
         {
-            PublishInternal(message, false);
+            PublishInternal(message, routeKey);
         }
 
         public void Dispose()
