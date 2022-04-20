@@ -9,6 +9,7 @@ namespace evnto.chat.ui.Forms
 
         EvntoHttpClient _httpClient;
         EvntoWSClient _wSClient;
+        CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
 
         #endregion
 
@@ -72,6 +73,8 @@ namespace evnto.chat.ui.Forms
         private async void FormChat_FormClosed(object sender, FormClosedEventArgs e)
         {
             await _httpClient.SignOutAsync();
+
+            CancellationTokenSource.Cancel();
             await _wSClient.DisconnectAsync();
             Application.Exit();
         }
@@ -81,7 +84,7 @@ namespace evnto.chat.ui.Forms
             await LoadUsers();
             await LoadChats();
 
-            await _wSClient.RecieveAsync(CancellationToken.None).ConfigureAwait(false);
+            await _wSClient.RecieveAsync(CancellationTokenSource.Token).ConfigureAwait(false);
         }
 
         #endregion

@@ -120,8 +120,10 @@ namespace evnto.chat.bll.Implementations
                 RmqMessage rmqMessage = new RmqMessage(RmqMessageType.ChatStateChanged);
                 rmqMessage.PayLoad.Add(nameof(Chat.ChatId), chat.ChatId.ToString());
                 rmqMessage.PayLoad.Add(nameof(Chat.State), chat.State.ToString());
+                rmqMessage.PayLoad.Add(nameof(Chat.InitiatorUserId), chat.InitiatorUserId.ToString());
+                rmqMessage.PayLoad.Add(nameof(Chat.RecipientUserId), chat.RecipientUserId.ToString());
 
-                if(session1 != null)
+                if (session1 != null)
                     BLFactory.GetRmqConnector().PublishRouted(session1.ApiKey, rmqMessage);
 
                 if (session2 != null)

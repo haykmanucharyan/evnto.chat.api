@@ -52,6 +52,9 @@ namespace evnto.chat.bll.Implementations
                     rmqMessage.PayLoad.Add(nameof(Message.AuthorUserId), message.AuthorUserId.ToString());
                     rmqMessage.PayLoad.Add(nameof(Message.Text), message.Text);
 
+                    rmqMessage.PayLoad.Add(nameof(Chat.RecipientUserId), chat.RecipientUserId.ToString());
+                    rmqMessage.PayLoad.Add(nameof(Chat.InitiatorUserId), chat.InitiatorUserId.ToString());
+
                     rmqMessage.PayLoad.Add($"{nameof(Message.AuthorUser)}.{nameof(User.UserId)}", message.AuthorUser.ToString());
                     rmqMessage.PayLoad.Add($"{nameof(Message.AuthorUser)}.{nameof(User.UserName)}", message.AuthorUser.UserName);
                     rmqMessage.PayLoad.Add($"{nameof(Message.AuthorUser)}.{nameof(User.FullName)}", message.AuthorUser.FullName);

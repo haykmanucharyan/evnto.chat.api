@@ -1,5 +1,6 @@
 ﻿using evnto.chat.bll.Interfaces;
 using evnto.chat.bus;
+using evnto.chat.dal.Entities;
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
 
@@ -118,8 +119,18 @@ namespace evnto.chat.api.WS
             if (isGlobal)
                 await Write2AllAsync(message);
             else
-            { 
-                
+            {
+                switch (message.MessageType)
+                {
+                    case RmqMessageType.Message:
+                    case RmqMessageType.ChatCreated:
+                    case RmqMessageType.ChatStateChanged:
+                        int initiatorUserId = int.Parse(message.PayLoad[nameof(Chat.InitiatorUserId)]);
+                        int recipientUserId = int.Parse(message.PayLoad[nameof(Chat.RecipientUserId)]);
+                        await WriteAsync(initiatorUserId, message);
+                        await WriteAsync(recipientUserId, message);
+                        break;
+                }
             }
         }
 
