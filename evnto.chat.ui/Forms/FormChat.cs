@@ -78,10 +78,10 @@ namespace evnto.chat.ui.Forms
 
         private async void FormChat_Load(object sender, EventArgs e)
         {
-            await _wSClient.ConnectAsync();
-
             await LoadUsers();
-            await LoadChats();            
+            await LoadChats();
+
+            await _wSClient.RecieveAsync(CancellationToken.None).ConfigureAwait(false);
         }
 
         #endregion

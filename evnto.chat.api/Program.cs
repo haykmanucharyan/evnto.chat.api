@@ -1,6 +1,7 @@
 using evnto.chat.api;
 using evnto.chat.api.Authentication;
 using evnto.chat.api.ErrorHandling;
+using evnto.chat.api.WS;
 using evnto.chat.bll;
 using evnto.chat.bll.Implementations;
 using evnto.chat.bll.Interfaces;
@@ -41,6 +42,10 @@ blConfig.ApiKey = $"{Environment.MachineName}_{Guid.NewGuid()}";
 IBLFactory factory = new BLFactory(blConfig);
 builder.Services.AddSingleton<IBLFactory>(factory);
 
+// ws connection manager injection
+IWSConnectionManager wSConnectionManager = new WSConnectionManager(factory);
+builder.Services.AddSingleton<IWSConnectionManager>(wSConnectionManager);
+
 // custom authentication injection
 builder.Services.AddAuthentication(options => options.DefaultScheme = Constants.EvntoAuthScheme)
     .AddScheme<EvntoAuthSchemeOptions, EvntoAuthHandler>(Constants.EvntoAuthScheme, options => { });
@@ -78,17 +83,11 @@ app.UseWebSockets(wsOptions);
 
 // rmq part
 IRmqConnector rmqConnector = factory.GetRmqConnector();
-rmqConnector.RmqMessageArrived += RmqConnector_RmqMessageArrived;
 rmqConnector.BeginConsume();
-
-void RmqConnector_RmqMessageArrived(bool isGlobal, RmqMessage message)
-{
-    
-}
 
 app.Run();
 
 // rmq cleanup
-rmqConnector.RmqMessageArrived -= RmqConnector_RmqMessageArrived;
+wSConnectionManager.Dispose();
 rmqConnector.Dispose();
 

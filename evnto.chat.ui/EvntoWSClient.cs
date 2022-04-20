@@ -16,12 +16,19 @@ namespace evnto.chat.ui
             _socket = new ClientWebSocket();
         }
 
-        public async Task ConnectAsync()
+        public async Task RecieveAsync(CancellationToken cancellationToken)
         {
-            ClientWebSocketOptions options = _socket.Options;
-            options.SetRequestHeader("Token", Session.Token);
+            _socket.Options.SetRequestHeader("Token", Session.Token);
 
-            await _socket.ConnectAsync(new Uri(_url), CancellationToken.None);
+            await _socket.ConnectAsync(new Uri(_url), cancellationToken);
+
+            ArraySegment<byte> buffer = new ArraySegment<byte>(new byte[8192]);
+
+            while (true)
+            {
+                WebSocketReceiveResult rcvResult = await _socket.ReceiveAsync(buffer, cancellationToken);
+                byte[] msgBytes = buffer.Skip(buffer.Offset).Take(rcvResult.Count).ToArray();
+            }
         }
 
         public async Task DisconnectAsync()
