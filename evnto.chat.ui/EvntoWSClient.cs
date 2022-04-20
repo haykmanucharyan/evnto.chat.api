@@ -9,6 +9,9 @@ namespace evnto.chat.ui
         string _url;
         public UserSessionModel Session { get; private set; }
 
+        public delegate void MessageArrivedHandler(RmqMessage message);
+        public event MessageArrivedHandler MessageArrived;
+
         public EvntoWSClient(string url, UserSessionModel session)
         {
             _url = url;
@@ -26,8 +29,10 @@ namespace evnto.chat.ui
 
             while (true)
             {
-                WebSocketReceiveResult rcvResult = await _socket.ReceiveAsync(buffer, cancellationToken);
-                byte[] msgBytes = buffer.Skip(buffer.Offset).Take(rcvResult.Count).ToArray();
+                WebSocketReceiveResult result = await _socket.ReceiveAsync(buffer, cancellationToken);
+                byte[] data = buffer.Skip(buffer.Offset).Take(result.Count).ToArray();
+
+                MessageArrived?.Invoke(RmqMessage.FromBytes(data));
             }
         }
 

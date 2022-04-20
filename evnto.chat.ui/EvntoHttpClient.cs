@@ -125,14 +125,14 @@ namespace evnto.chat.ui
             await PutAsync("user", sm);
         }
 
-        public async Task<ObservableCollection<UserModel>> GetOnlineUsersAsync()
+        public async Task<List<UserModel>> GetOnlineUsersAsync()
         {
-            return await GetAsync<ObservableCollection<UserModel>>("user", null);
+            return await GetAsync<List<UserModel>>("user", null);
         }
 
-        public async Task<ObservableCollection<ChatModel>> GetActiveChatsAsync()
+        public async Task<List<ChatModel>> GetActiveChatsAsync()
         {
-            return await GetAsync<ObservableCollection<ChatModel>>("chat", null);
+            return await GetAsync<List<ChatModel>>("chat", null);
         }
 
         public async Task StartChatAsync(int recipientUserId)
@@ -153,9 +153,9 @@ namespace evnto.chat.ui
             await PostAsync<ChatModel, string>("chat", chat);
         }
 
-        public async Task<ObservableCollection<MessageModel>> GetMessagesAsync(int chatId)
+        public async Task<List<MessageModel>> GetMessagesAsync(int chatId)
         {
-            return await GetAsync<ObservableCollection<MessageModel>>("message", new Dictionary<string, string>() { { "chatId", chatId.ToString() } });
+            return await GetAsync<List<MessageModel>>("message", new Dictionary<string, string>() { { "chatId", chatId.ToString() } });
         }
 
         public async Task SendMessageAsync(int chatId, string text)

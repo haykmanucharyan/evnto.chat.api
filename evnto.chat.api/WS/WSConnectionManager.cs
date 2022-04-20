@@ -127,8 +127,11 @@ namespace evnto.chat.api.WS
                     case RmqMessageType.ChatStateChanged:
                         int initiatorUserId = int.Parse(message.PayLoad[nameof(Chat.InitiatorUserId)]);
                         int recipientUserId = int.Parse(message.PayLoad[nameof(Chat.RecipientUserId)]);
-                        await WriteAsync(initiatorUserId, message);
-                        await WriteAsync(recipientUserId, message);
+                        await Task.Run(async () =>
+                        {
+                            await WriteAsync(initiatorUserId, message);
+                            await WriteAsync(recipientUserId, message);
+                        });
                         break;
                 }
             }

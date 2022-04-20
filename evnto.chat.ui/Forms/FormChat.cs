@@ -11,15 +11,9 @@ namespace evnto.chat.ui.Forms
         EvntoWSClient _wSClient;
         CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
 
-        #endregion
-
-        #region Properties
-
-        public ObservableCollection<UserModel> Users { get; set; }
-
-        public ObservableCollection<ChatModel> Chats { get; set; }
-
-        public ObservableCollection<MessageModel> Messages { get; set; }
+        BindingSource _bindingSourceUsers = new BindingSource() { DataSource = new List<UserModel>() };
+        BindingSource _bindingSourceChats = new BindingSource() { DataSource = new List<ChatModel>() };
+        BindingSource _bindingSourceMessages = new BindingSource() { DataSource = new List<MessageModel>() };
 
         #endregion
 
@@ -40,28 +34,32 @@ namespace evnto.chat.ui.Forms
 
         private async Task LoadUsers()
         {
-            Users = await _httpClient.GetOnlineUsersAsync();
-            listBoxUsers.DataSource = Users;
+            _bindingSourceUsers.DataSource = await _httpClient.GetOnlineUsersAsync();
+            listBoxUsers.DataSource = _bindingSourceUsers;            
         }
 
         private async Task LoadChats()
         {
-            Chats = await _httpClient.GetActiveChatsAsync();
+            List<ChatModel> chats = await _httpClient.GetActiveChatsAsync();
 
-            foreach (ChatModel chat in Chats)
-            {
-                chat.ChatInfo = chat.State.ToString() + " chat by " + (chat.InitiatorUserId == _httpClient.Session.UserId ? "Me" : chat.InitiatorUser.FullName);
-                chat.ChatInfo += " with " + (chat.InitiatorUserId == _httpClient.Session.UserId ? chat.RecipientUser.FullName : chat.InitiatorUser.FullName);
-                chat.ChatInfo += " started at " + chat.Created;
-            }
+            foreach (ChatModel chat in chats)
+                SetChatInfo(chat);
 
-            listBoxChats.DataSource = Chats;
+            _bindingSourceChats.DataSource = chats;
+            listBoxChats.DataSource = _bindingSourceChats;
+        }
+
+        private void SetChatInfo(ChatModel chat)
+        {
+            chat.ChatInfo = chat.State.ToString() + " chat by " + (chat.InitiatorUserId == _httpClient.Session.UserId ? "Me" : chat.InitiatorUser.FullName);
+            chat.ChatInfo += " with " + (chat.InitiatorUserId == _httpClient.Session.UserId ? chat.RecipientUser.FullName : chat.InitiatorUser.FullName);
+            chat.ChatInfo += " started at " + chat.Created;
         }
 
         private async Task LoadMessages(int chatId)
         {
-            Messages = await _httpClient.GetMessagesAsync(chatId);
-            dataGridViewMessages.DataSource = Messages;
+            _bindingSourceMessages.DataSource = await _httpClient.GetMessagesAsync(chatId);
+            dataGridViewMessages.DataSource = _bindingSourceMessages;
         }
 
         #endregion
@@ -73,7 +71,7 @@ namespace evnto.chat.ui.Forms
         private async void FormChat_FormClosed(object sender, FormClosedEventArgs e)
         {
             await _httpClient.SignOutAsync();
-
+            _wSClient.MessageArrived -= _wSClient_MessageArrived;
             CancellationTokenSource.Cancel();
             await _wSClient.DisconnectAsync();
             Application.Exit();
@@ -84,7 +82,127 @@ namespace evnto.chat.ui.Forms
             await LoadUsers();
             await LoadChats();
 
+            _wSClient.MessageArrived += _wSClient_MessageArrived;
             await _wSClient.RecieveAsync(CancellationTokenSource.Token).ConfigureAwait(false);
+        }
+
+        private void _wSClient_MessageArrived(RmqMessage message)
+        {
+            switch (message.MessageType)
+            {
+                case RmqMessageType.SignIn:
+                    int userId = int.Parse(message.PayLoad[nameof(UserModel.UserId)]);
+
+                    if (userId != _httpClient.Session.UserId)
+                    {
+                        UserModel user = new UserModel();
+                        user.UserId = userId;
+                        user.UserName = message.PayLoad[nameof(UserModel.UserName)];
+                        user.FullName = message.PayLoad[nameof(UserModel.FullName)];
+
+                        List<UserModel> ulist1 = _bindingSourceUsers.DataSource as List<UserModel>;
+
+                        if(!ulist1.Any(u => u.UserId == userId))
+                            ulist1.Add(user);
+
+                        _bindingSourceUsers.ResetBindings(false);
+                    }
+
+                    break;
+
+                case RmqMessageType.SignOut:
+                    userId = int.Parse(message.PayLoad[nameof(UserModel.UserId)]);
+
+                    List<UserModel> ulist2 = _bindingSourceUsers.DataSource as List<UserModel>;
+
+                    UserModel um = ulist2.Where(u => u.UserId == userId).FirstOrDefault();
+
+                    if (um != null)
+                    {
+                        ulist2.Remove(um);
+                        _bindingSourceUsers.ResetBindings(false);
+                    }
+
+                    break;
+
+                case RmqMessageType.ChatCreated:
+                    int chatId = int.Parse(message.PayLoad[nameof(ChatModel.ChatId)]);
+
+                    List<ChatModel> chats1 = _bindingSourceChats.DataSource as List<ChatModel>;
+                    if (!chats1.Any(c => c.ChatId == chatId))
+                    {
+                        ChatModel chat = new ChatModel();
+                        chat.ChatId = chatId;
+                        chat.Created = DateTimeOffset.MinValue.AddTicks(long.Parse(message.PayLoad[nameof(ChatModel.Created)]));
+                        chat.State = ChatState.Initiated;
+                        chat.InitiatorUserId = int.Parse(message.PayLoad[nameof(ChatModel.InitiatorUserId)]);
+                        chat.RecipientUserId = int.Parse(message.PayLoad[nameof(ChatModel.RecipientUserId)]);
+                        chat.RecipientUser = new UserModel()
+                        {
+                            UserId = chat.RecipientUserId,
+                            UserName = message.PayLoad[$"{nameof(ChatModel.RecipientUser)}.{nameof(UserModel.UserName)}"],
+                            FullName = message.PayLoad[$"{nameof(ChatModel.RecipientUser)}.{nameof(UserModel.FullName)}"],
+                        };
+
+                        chat.InitiatorUser = new UserModel()
+                        {
+                            UserId = chat.InitiatorUserId,
+                            UserName = message.PayLoad[$"{nameof(ChatModel.InitiatorUser)}.{nameof(UserModel.UserName)}"],
+                            FullName = message.PayLoad[$"{nameof(ChatModel.InitiatorUser)}.{nameof(UserModel.FullName)}"],
+                        };
+
+                        SetChatInfo(chat);
+                        chats1.Add(chat);
+                        _bindingSourceChats.ResetBindings(false);
+                    }
+
+                    break;
+
+                case RmqMessageType.ChatStateChanged:
+                    chatId = int.Parse(message.PayLoad[nameof(ChatModel.ChatId)]);
+                    List<ChatModel> chats2 = _bindingSourceChats.DataSource as List<ChatModel>;
+                    ChatModel ch = chats2.FirstOrDefault(c => c.ChatId == chatId);
+
+                    if (ch != null)
+                    {
+                        ch.State = (ChatState)byte.Parse(message.PayLoad[nameof(ChatModel.State)]);
+                        SetChatInfo(ch);
+                        _bindingSourceChats.ResetBindings(false);
+                    }
+                    break;
+
+                case RmqMessageType.Message:
+                    if (listBoxChats.DataSource == null || listBoxChats.SelectedValue == null)
+                        return;
+
+                    chatId = int.Parse(message.PayLoad[nameof(ChatModel.ChatId)]);
+                    if ((listBoxChats.SelectedValue as ChatModel).ChatId != chatId)
+                        return;
+
+                    MessageModel mm = new MessageModel();
+                    mm.ChatId = chatId;
+                    mm.MessageId = long.Parse(message.PayLoad[nameof(MessageModel.MessageId)]);
+                    mm.Created = DateTimeOffset.MinValue.AddTicks(long.Parse(message.PayLoad[nameof(MessageModel.Created)]));
+                    mm.AuthorUserId = int.Parse(message.PayLoad[nameof(MessageModel.AuthorUserId)]);
+                    mm.Text = message.PayLoad[nameof(MessageModel.Text)];
+
+                    mm.AuthorUser = new UserModel()
+                    {
+                        UserId = mm.AuthorUserId,
+                        UserName = message.PayLoad[$"{nameof(MessageModel.AuthorUser)}.{nameof(UserModel.UserName)}"],
+                        FullName = message.PayLoad[$"{nameof(MessageModel.AuthorUser)}.{nameof(UserModel.FullName)}"],
+                    };
+
+                    List<MessageModel> mms = _bindingSourceMessages.DataSource as List<MessageModel>;
+
+                    if (!mms.Any(m => m.MessageId == mm.MessageId))
+                    {
+                        mms.Add(mm);
+                        _bindingSourceMessages.ResetBindings(false);
+                    }
+
+                    break;
+            }
         }
 
         #endregion
@@ -148,8 +266,8 @@ namespace evnto.chat.ui.Forms
                     await LoadMessages(chat.ChatId);
                 else
                 {
-                    Messages = null;
-                    dataGridViewMessages.DataSource = null;
+                    _bindingSourceMessages.DataSource = new List<MessageModel>();
+                    _bindingSourceMessages.ResetBindings(false);
                 }
             }
         }
